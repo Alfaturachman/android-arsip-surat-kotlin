@@ -18,22 +18,22 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".ui.admin.tambah.TambahSuratMasukActivity"
+            android:name=".ui.admin.suratmasuk.tambah.TambahSuratMasukActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.bagian.tambah.TambahSuratMasukActivity"
+            android:name=".ui.bagian.suratmasuk.tambah.TambahSuratMasukActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.bagian.RiwayatSuratMasukActivity"
+            android:name=".ui.bagian.suratmasuk.RiwayatSuratMasukActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.admin.RiwayatSuratMasukActivity"
+            android:name=".ui.admin.suratmasuk.RiwayatSuratMasukActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.admin.detail.DetailSuratMasukActivity"
+            android:name=".ui.admin.suratmasuk.detail.DetailSuratMasukActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.bagian.detail.DetailSuratMasukActivity"
+            android:name=".ui.bagian.suratmasuk.detail.DetailSuratMasukActivity"
             android:exported="false" />
         <activity
             android:name=".ui.auth.RegisterActivity"

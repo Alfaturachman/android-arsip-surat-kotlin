@@ -1,14 +1,17 @@
-package com.example.arsipsurat.ui.bagian.tambah
+package com.example.arsipsurat.ui.admin.suratmasuk.tambah
 
-import android.annotation.SuppressLint
-import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.DatePicker
+import android.widget.ImageButton
 import android.widget.TimePicker
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.example.arsipsurat.R
 import com.google.android.material.textfield.TextInputEditText
 import java.util.Calendar
@@ -21,11 +24,21 @@ class TambahSuratMasukActivity : AppCompatActivity() {
     private lateinit var etTanggalDisposisi2: TextInputEditText
     private lateinit var etTanggalDisposisi3: TextInputEditText
 
-    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_tambah_surat_masuk_bagian)
+        setContentView(R.layout.activity_tambah_surat_masuk_admin)
+        supportActionBar?.hide()
+
+        // Set status bar color dan mode light
+        window.statusBarColor = resources.getColor(R.color.white, theme)
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+
+        // Button Kembali
+        val btnKembali: ImageButton = findViewById(R.id.btnKembali)
+        btnKembali.setOnClickListener {
+            finish()
+        }
 
         // Initialize views
         etTanggalMasuk = findViewById(R.id.etTanggalMasuk)

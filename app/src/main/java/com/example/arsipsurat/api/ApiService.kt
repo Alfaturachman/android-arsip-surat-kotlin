@@ -9,11 +9,13 @@ import retrofit2.http.Headers
 import retrofit2.http.POST
 
 interface ApiService {
-    // POST
+    // Login
     @POST("login.php")
     fun loginUser(@Body body: RequestBody): Call<ResponseBody>
 
-    @POST("post_pemasok.php")
-    fun registerUser(@Body body: RequestBody): Call<ResponseBody>
+    // Admin
+
+
+    // Bagian
 
 }
