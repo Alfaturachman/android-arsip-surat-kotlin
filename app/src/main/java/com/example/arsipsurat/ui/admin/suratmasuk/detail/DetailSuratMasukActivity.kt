@@ -14,6 +14,7 @@ import android.widget.LinearLayout
 
 class DetailSuratMasukActivity : AppCompatActivity() {
 
+    private var idSurat: Int = -1
     private lateinit var titleText: TextView
     private lateinit var tvTanggalSurat: TextView
     private lateinit var tvKodeSurat: TextView
@@ -66,19 +67,40 @@ class DetailSuratMasukActivity : AppCompatActivity() {
         tvDisposisi3 = findViewById(R.id.tvDisposisi3)
         tvTanggalDisposisi3 = findViewById(R.id.tvTanggalDisposisi3)
 
+        idSurat = intent.getIntExtra("id_surat", -1)
+        val kodeSurat = intent.getStringExtra("kode_surat")
+        val nomorSurat = intent.getStringExtra("nomor_surat")
+        val nomorUrut = intent.getStringExtra("nomor_urut")
+        val tanggal = intent.getStringExtra("tanggal")
+        val tanggalSurat = intent.getStringExtra("tanggal_surat")
+        val penerima = intent.getStringExtra("penerima")
+        val pengirim = intent.getStringExtra("pengirim")
+        val perihal = intent.getStringExtra("perihal")
+        val kategori = intent.getStringExtra("kategori")
+        val status = intent.getStringExtra("status")
+        val fileSurat = intent.getStringExtra("file_surat")
+        val idBagianPengirim = intent.getIntExtra("id_bagian_pengirim", -1)
+        val idBagianPenerima = intent.getIntExtra("id_bagian_penerima", -1)
+        val disposisi1 = intent.getStringExtra("disposisi_1")
+        val tanggalDisposisi1 = intent.getStringExtra("tanggal_disposisi_1")
+        val disposisi2 = intent.getStringExtra("disposisi_2")
+        val tanggalDisposisi2 = intent.getStringExtra("tanggal_disposisi_2")
+        val disposisi3 = intent.getStringExtra("disposisi_3")
+        val tanggalDisposisi3 = intent.getStringExtra("tanggal_disposisi_3")
+
         // Contoh mengatur teks secara dinamis
-        tvTanggalSurat.text = "2023-10-20"
-        tvKodeSurat.text = "1234"
-        tvNomorSurat.text = "5678"
-        tvPenerima.text = "Ka. Balai PSDA"
-        tvPengirim.text = "Ka. Bid PPT"
-        tvPerihal.text = "Kasus ini mengenai sengketa tanah antara dua pihak."
-        tvNamaFilePdf.text = "surat_masuk_baru.pdf"
-        tvDisposisi1.text = "Disposisi 1 Baru"
-        tvTanggalDisposisi1.text = "2023-10-20"
-        tvDisposisi2.text = "Disposisi 2 Baru"
-        tvTanggalDisposisi2.text = "2023-10-21"
-        tvDisposisi3.text = "Disposisi 3 Baru"
-        tvTanggalDisposisi3.text = "2023-10-22"
+        tvTanggalSurat.text = "$tanggalSurat"
+        tvKodeSurat.text = "$kodeSurat"
+        tvNomorSurat.text = "$nomorSurat"
+        tvPenerima.text = "$penerima"
+        tvPengirim.text = "$pengirim"
+        tvPerihal.text = "$perihal"
+        tvNamaFilePdf.text = "$fileSurat"
+        tvDisposisi1.text = disposisi1?.takeIf { it.isNotEmpty() } ?: "-"
+        tvTanggalDisposisi1.text = tanggalDisposisi1?.takeIf { it.isNotEmpty() } ?: "-"
+        tvDisposisi2.text = disposisi2?.takeIf { it.isNotEmpty() } ?: "-"
+        tvTanggalDisposisi2.text = tanggalDisposisi2?.takeIf { it.isNotEmpty() } ?: "-"
+        tvDisposisi3.text = disposisi3?.takeIf { it.isNotEmpty() } ?: "-"
+        tvTanggalDisposisi3.text = tanggalDisposisi3?.takeIf { it.isNotEmpty() } ?: "-"
     }
 }

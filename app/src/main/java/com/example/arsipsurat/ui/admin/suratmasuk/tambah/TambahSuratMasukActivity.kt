@@ -138,5 +138,7 @@ class TambahSuratMasukActivity : AppCompatActivity() {
         Log.d("TambahSuratMasuk", "Tanggal Disposisi 2: ${etTanggalDisposisi2.text}")
         Log.d("TambahSuratMasuk", "Disposisi 3: ${etDisposisi3.text}")
         Log.d("TambahSuratMasuk", "Tanggal Disposisi 3: ${etTanggalDisposisi3.text}")
+
+
     }
 }

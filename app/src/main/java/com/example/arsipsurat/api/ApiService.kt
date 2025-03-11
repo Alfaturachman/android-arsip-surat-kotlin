@@ -15,7 +15,7 @@ interface ApiService {
     fun loginUser(@Body body: RequestBody): Call<ResponseBody>
 
     // Admin
-    @GET("get_all_surat_masuk.php")
+    @GET("get_all_surat.php")
     fun getSuratMasuk(): Call<ApiResponse<List<Surat>>>
 
     // Bagian
