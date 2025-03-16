@@ -1,6 +1,7 @@
 package com.example.arsipsurat.ui.admin.suratmasuk.detail
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -11,6 +12,13 @@ import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.Toast
+import com.example.arsipsurat.api.ApiResponse
+import com.example.arsipsurat.api.RetrofitClient
+import com.example.arsipsurat.model.Surat
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class DetailSuratMasukActivity : AppCompatActivity() {
 
@@ -102,5 +110,56 @@ class DetailSuratMasukActivity : AppCompatActivity() {
         tvTanggalDisposisi2.text = tanggalDisposisi2?.takeIf { it.isNotEmpty() } ?: "-"
         tvDisposisi3.text = disposisi3?.takeIf { it.isNotEmpty() } ?: "-"
         tvTanggalDisposisi3.text = tanggalDisposisi3?.takeIf { it.isNotEmpty() } ?: "-"
+
+        fetchDetailMediasi(idSurat)
+    }
+
+    private fun fetchDetailMediasi(idSurat: Int) {
+        val requestBody = hashMapOf("id_surat" to idSurat)
+
+        RetrofitClient.instance.getDetailSurat(requestBody)
+            .enqueue(object : Callback<ApiResponse<Surat>> {
+                override fun onResponse(
+                    call: Call<ApiResponse<Surat>>,
+                    response: Response<ApiResponse<Surat>>
+                ) {
+                    Log.d("API_RESPONSE", "Response code: ${response.code()}")
+
+                    if (response.isSuccessful) {
+                        val suratResponse = response.body()
+
+                        if (suratResponse?.status == true) {
+                            suratResponse.data?.let { surat ->
+                                Log.d("API_RESPONSE", "Data berhasil diterima: $surat")
+
+                                val kategori = surat.kategori
+                                when (kategori) {
+                                    "Surat Masuk" -> {
+                                        layoutDisposisi.visibility = View.VISIBLE
+                                    } else -> {
+                                    layoutDisposisi.visibility = View.GONE
+                                    }
+                                }
+                            }
+                        } else {
+                            Log.e("API_ERROR", "Response gagal: ${suratResponse?.message}")
+                            Toast.makeText(
+                                this@DetailSuratMasukActivity,
+                                suratResponse?.message ?: "Data tidak ditemukan",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    } else {
+                        val errorBody = response.errorBody()?.string()
+                        Log.e("API_ERROR", "Response Error: $errorBody")
+                        Toast.makeText(this@DetailSuratMasukActivity, "Gagal mengambil data", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<ApiResponse<Surat>>, t: Throwable) {
+                    Log.e("API_ERROR", "Failure: ${t.message}", t)
+                    Toast.makeText(this@DetailSuratMasukActivity, "Terjadi kesalahan jaringan", Toast.LENGTH_SHORT).show()
+                }
+            })
     }
 }

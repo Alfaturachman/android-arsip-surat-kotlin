@@ -18,6 +18,10 @@ interface ApiService {
     @GET("get_all_surat.php")
     fun getSuratMasuk(): Call<ApiResponse<List<Surat>>>
 
+    @Headers("Content-Type: application/json")
+    @POST("get_detail_surat.php")
+    fun getDetailSurat(@Body request: Map<String, Int>): Call<ApiResponse<Surat>>
+
     // Bagian
 
 }
