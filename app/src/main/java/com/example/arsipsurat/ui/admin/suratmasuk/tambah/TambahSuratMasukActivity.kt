@@ -16,6 +16,7 @@ import android.widget.Spinner
 import android.widget.TimePicker
 import android.widget.Toast
 import android.widget.AdapterView
+import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
@@ -59,7 +60,7 @@ class TambahSuratMasukActivity : AppCompatActivity() {
     private lateinit var spinnerPengirim: Spinner
     private lateinit var spinnerKepada: Spinner
     private var bagianList: List<Pair<String, Int>> = emptyList()
-    private var selectedPdfUri: Uri? = null  // Simpan URI file yang dipilih
+    private var selectedPdfUri: Uri? = null
     private lateinit var apiService: ApiService
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -91,7 +92,7 @@ class TambahSuratMasukActivity : AppCompatActivity() {
             showDateTimePicker(etTanggalMasuk, "2025-05-01 20:33:00")
         }
 
-        // Set up DatePicker for Tanggal Surat
+        // Set up DatePicker for Tanggal Surat (hanya tanggal)
         etTanggalSurat.setOnClickListener {
             showDatePicker(etTanggalSurat, "2025-05-01")
         }
@@ -241,8 +242,12 @@ class TambahSuratMasukActivity : AppCompatActivity() {
         val selectedKepadaPos = spinnerKepada.selectedItemPosition
 
         // Ambil nama dan ID bagian berdasarkan posisi yang dipilih
-        val bagianPengirim = if (selectedPengirimPos >= 0) bagianList[selectedPengirimPos] else null
-        val bagianKepada = if (selectedKepadaPos >= 0) bagianList[selectedKepadaPos] else null
+        val bagianPengirim = if (selectedPengirimPos in bagianList.indices) bagianList[selectedPengirimPos] else null
+        val bagianKepada = if (selectedKepadaPos in bagianList.indices) bagianList[selectedKepadaPos] else null
+
+        Log.d("TambahSuratMasuk", "Bagian List Size: ${bagianList.size}")
+        Log.d("TambahSuratMasuk", "Selected Pengirim Pos: $selectedPengirimPos")
+        Log.d("TambahSuratMasuk", "Selected Kepada Pos: $selectedKepadaPos")
 
         // Simpan nama dan ID bagian ke dalam variabel yang akan dikirim ke API
         val namaPengirim = bagianPengirim?.first ?: ""
@@ -354,6 +359,23 @@ class TambahSuratMasukActivity : AppCompatActivity() {
         val disposisi3Body = disposisi3.toRequestBody("text/plain".toMediaTypeOrNull())
         val tanggalDisposisi3Body = formattedTanggalDisposisi3.toRequestBody("text/plain".toMediaTypeOrNull())
 
+        Log.d("TambahSuratMasuk", "Kode Surat: $kodeSurat")
+        Log.d("TambahSuratMasuk", "Nomor Urut: $nomorUrut")
+        Log.d("TambahSuratMasuk", "Nomor Surat: $nomorSurat")
+        Log.d("TambahSuratMasuk", "Tanggal Masuk: $formattedTanggalMasuk")
+        Log.d("TambahSuratMasuk", "Tanggal Surat: $formattedTanggalSurat")
+        Log.d("TambahSuratMasuk", "Pengirim: $namaPengirim")
+        Log.d("TambahSuratMasuk", "ID Pengirim: $idBagianPengirim")
+        Log.d("TambahSuratMasuk", "Kepada: $namaKepada")
+        Log.d("TambahSuratMasuk", "ID Penerima: $idBagianPenerima")
+        Log.d("TambahSuratMasuk", "Perihal: $perihal")
+        Log.d("TambahSuratMasuk", "Disposisi 1: $disposisi1")
+        Log.d("TambahSuratMasuk", "Tanggal Disposisi 1: $formattedTanggalDisposisi1")
+        Log.d("TambahSuratMasuk", "Disposisi 2: $disposisi2")
+        Log.d("TambahSuratMasuk", "Tanggal Disposisi 2: $formattedTanggalDisposisi2")
+        Log.d("TambahSuratMasuk", "Disposisi 3: $disposisi3")
+        Log.d("TambahSuratMasuk", "Tanggal Disposisi 3: $formattedTanggalDisposisi3")
+
         // Kirim data ke API menggunakan Retrofit
         RetrofitClient.instance.tambahSurat(
             kodeSuratBody,
@@ -391,7 +413,8 @@ class TambahSuratMasukActivity : AppCompatActivity() {
                         Toast.makeText(this@TambahSuratMasukActivity, "Gagal menyimpan surat masuk!", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    Log.e("TambahSuratMasuk", "Response error: ${response.code()} - ${response.message()}")
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("TambahSuratMasuk", "Response error: ${response.code()} - ${response.message()}. Error body: $errorBody")
                     Toast.makeText(this@TambahSuratMasukActivity, "Error: ${response.message()}", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -403,47 +426,64 @@ class TambahSuratMasukActivity : AppCompatActivity() {
         })
     }
 
-    private fun uriToFile(uri: Uri): File {
-        val file = File(cacheDir, getFileName(uri))
-        contentResolver.openInputStream(uri)?.use { inputStream ->
-            FileOutputStream(file).use { outputStream ->
-                inputStream.copyTo(outputStream)
-            }
-        }
-        return file
-    }
-
-    private fun showDatePicker(editText: TextInputEditText, defaultDate: String) {
+    fun showDatePicker(editText: EditText, defaultDate: String) {
         val calendar = Calendar.getInstance()
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val day = calendar.get(Calendar.DAY_OF_MONTH)
+        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val defaultDateParsed = LocalDate.parse(defaultDate, dateFormatter)
 
-        val datePickerDialog = DatePickerDialog(this, { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
-            val selectedDate = "$year-${month + 1}-$dayOfMonth"
-            editText.setText(selectedDate)
-        }, year, month, day)
+        calendar.set(
+            defaultDateParsed.year,
+            defaultDateParsed.monthValue - 1, // Bulan di Calendar dimulai dari 0
+            defaultDateParsed.dayOfMonth
+        )
 
+        val datePickerDialog = DatePickerDialog(
+            this,
+            { _, year, month, dayOfMonth ->
+                val selectedDate = LocalDate.of(year, month + 1, dayOfMonth)
+                val formattedDate = selectedDate.format(dateFormatter)
+                editText.setText(formattedDate)
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        )
         datePickerDialog.show()
     }
 
-    private fun showDateTimePicker(editText: TextInputEditText, defaultDateTime: String) {
+    fun showDateTimePicker(editText: EditText, defaultDateTime: String) {
         val calendar = Calendar.getInstance()
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val day = calendar.get(Calendar.DAY_OF_MONTH)
-        val hour = calendar.get(Calendar.HOUR_OF_DAY)
-        val minute = calendar.get(Calendar.MINUTE)
+        val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        val defaultDateTimeParsed = LocalDateTime.parse(defaultDateTime, dateTimeFormatter)
 
-        val datePickerDialog = DatePickerDialog(this, { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
-            val timePickerDialog = TimePickerDialog(this, { _: TimePicker, hourOfDay: Int, minute: Int ->
-                val selectedDateTime = "$year-${month + 1}-$dayOfMonth $hourOfDay:$minute:00"
-                editText.setText(selectedDateTime)
-            }, hour, minute, true)
+        calendar.set(
+            defaultDateTimeParsed.year,
+            defaultDateTimeParsed.monthValue - 1, // Bulan di Calendar dimulai dari 0
+            defaultDateTimeParsed.dayOfMonth,
+            defaultDateTimeParsed.hour,
+            defaultDateTimeParsed.minute
+        )
 
-            timePickerDialog.show()
-        }, year, month, day)
-
-        datePickerDialog.show()
+        val dateTimePickerDialog = DatePickerDialog(
+            this,
+            { _, year, month, dayOfMonth ->
+                val timePickerDialog = TimePickerDialog(
+                    this,
+                    { _, hourOfDay, minute ->
+                        val selectedDateTime = LocalDateTime.of(year, month + 1, dayOfMonth, hourOfDay, minute)
+                        val formattedDateTime = selectedDateTime.format(dateTimeFormatter)
+                        editText.setText(formattedDateTime)
+                    },
+                    calendar.get(Calendar.HOUR_OF_DAY),
+                    calendar.get(Calendar.MINUTE),
+                    true
+                )
+                timePickerDialog.show()
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        )
+        dateTimePickerDialog.show()
     }
 }

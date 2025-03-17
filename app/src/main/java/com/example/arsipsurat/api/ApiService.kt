@@ -35,7 +35,7 @@ interface ApiService {
     fun getBagian(): Call<ApiResponse<List<Bagian>>>
 
     @Multipart
-    @POST("tambah-surat")
+    @POST("post_surat_masuk.php")
     fun tambahSurat(
         @Part("kode_surat") kodeSurat: RequestBody,
         @Part("nomor_urut") nomorUrut: RequestBody,
