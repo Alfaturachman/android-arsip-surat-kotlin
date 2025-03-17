@@ -132,14 +132,7 @@ class DetailSuratMasukActivity : AppCompatActivity() {
                             suratResponse.data?.let { surat ->
                                 Log.d("API_RESPONSE", "Data berhasil diterima: $surat")
 
-                                val kategori = surat.kategori
-                                when (kategori) {
-                                    "Surat Masuk" -> {
-                                        layoutDisposisi.visibility = View.VISIBLE
-                                    } else -> {
-                                    layoutDisposisi.visibility = View.GONE
-                                    }
-                                }
+
                             }
                         } else {
                             Log.e("API_ERROR", "Response gagal: ${suratResponse?.message}")

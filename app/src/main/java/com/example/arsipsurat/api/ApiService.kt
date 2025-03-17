@@ -1,6 +1,7 @@
 package com.example.arsipsurat.api
 
 import com.example.arsipsurat.model.Surat
+import com.example.arsipsurat.model.TotalSurat
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -13,6 +14,9 @@ interface ApiService {
     // Login
     @POST("login.php")
     fun loginUser(@Body body: RequestBody): Call<ResponseBody>
+
+    @GET("get_total_surat.php")
+    fun getTotalSurat(): Call<ApiResponse<TotalSurat>>
 
     // Admin
     @GET("get_all_surat.php")
