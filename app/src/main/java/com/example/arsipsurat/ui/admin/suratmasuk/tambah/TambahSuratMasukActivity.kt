@@ -1,9 +1,12 @@
 package com.example.arsipsurat.ui.admin.suratmasuk.tambah
 
+import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.OpenableColumns
 import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
@@ -13,7 +16,10 @@ import android.widget.Spinner
 import android.widget.TimePicker
 import android.widget.Toast
 import android.widget.AdapterView
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -35,6 +41,8 @@ import java.time.LocalDateTime
 
 class TambahSuratMasukActivity : AppCompatActivity() {
 
+    private lateinit var selectPdfLauncher: ActivityResultLauncher<Intent>
+    private lateinit var tvNamaFilePdf: TextView
     private lateinit var etTanggalMasuk: TextInputEditText
     private lateinit var etTanggalSurat: TextInputEditText
     private lateinit var etTanggalDisposisi1: TextInputEditText
@@ -42,6 +50,7 @@ class TambahSuratMasukActivity : AppCompatActivity() {
     private lateinit var etTanggalDisposisi3: TextInputEditText
     private lateinit var spinnerPengirim: Spinner
     private lateinit var spinnerKepada: Spinner
+    private var bagianList: List<Pair<String, Int>> = emptyList()
     private lateinit var apiService: ApiService
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,6 +70,7 @@ class TambahSuratMasukActivity : AppCompatActivity() {
         }
 
         // Initialize views
+        tvNamaFilePdf = findViewById(R.id.tvNamaFilePdf)
         etTanggalMasuk = findViewById(R.id.etTanggalMasuk)
         etTanggalSurat = findViewById(R.id.etTanggalSurat)
         etTanggalDisposisi1 = findViewById(R.id.etTanggalDisposisi1)
@@ -92,6 +102,22 @@ class TambahSuratMasukActivity : AppCompatActivity() {
             showDateTimePicker(etTanggalDisposisi3, "2025-01-09 08:02:53")
         }
 
+        selectPdfLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val uri = result.data?.data
+                uri?.let {
+                    val fileName = getFileName(it)
+                    tvNamaFilePdf.text = fileName
+
+                    // Log informasi file
+                    Log.d("PDF_UPLOAD", "File URI: $uri")
+                    Log.d("PDF_UPLOAD", "File Name: $fileName")
+                }
+            } else {
+                Log.d("PDF_UPLOAD", "File selection canceled")
+            }
+        }
+
         spinnerPengirim = findViewById(R.id.spinnerPengirim)
         spinnerKepada = findViewById(R.id.spinnerKepada)
 
@@ -101,6 +127,27 @@ class TambahSuratMasukActivity : AppCompatActivity() {
         buttonTambah.setOnClickListener {
             simpanSuratMasuk()
         }
+    }
+
+    fun selectPdf(view: View) {
+        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+            type = "application/pdf"
+            addCategory(Intent.CATEGORY_OPENABLE)
+        }
+        selectPdfLauncher.launch(intent)
+    }
+
+    private fun getFileName(uri: Uri): String {
+        var result = "Unknown"
+        contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+            if (cursor.moveToFirst()) {
+                val index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (index != -1) {
+                    result = cursor.getString(index)
+                }
+            }
+        }
+        return result
     }
 
     private fun getBagianData() {
@@ -166,6 +213,19 @@ class TambahSuratMasukActivity : AppCompatActivity() {
         val etTanggalDisposisi1 = findViewById<TextInputEditText>(R.id.etTanggalDisposisi1)
         val etTanggalDisposisi2 = findViewById<TextInputEditText>(R.id.etTanggalDisposisi2)
         val etTanggalDisposisi3 = findViewById<TextInputEditText>(R.id.etTanggalDisposisi3)
+        // Ambil nilai dari Spinner
+        val selectedPengirimPos = spinnerPengirim.selectedItemPosition
+        val selectedKepadaPos = spinnerKepada.selectedItemPosition
+
+        // Ambil nama dan ID bagian berdasarkan posisi yang dipilih
+        val bagianPengirim = if (selectedPengirimPos >= 0) bagianList[selectedPengirimPos] else null
+        val bagianKepada = if (selectedKepadaPos >= 0) bagianList[selectedKepadaPos] else null
+
+        // Simpan nama dan ID bagian ke dalam variabel yang akan dikirim ke API
+        val namaPengirim = bagianPengirim?.first ?: "null"
+        val idBagianPengirim = bagianPengirim?.second ?: -1
+        val namaKepada = bagianKepada?.first ?: "null"
+        val idBagianPenerima = bagianKepada?.second ?: -1
 
         val kodeSurat = etKodeSurat.text.toString().trim()
         val nomorUrut = etNomorUrut.text.toString().trim()
@@ -222,10 +282,10 @@ class TambahSuratMasukActivity : AppCompatActivity() {
             nomor_surat = nomorSurat,
             tanggal_masuk = formattedTanggalMasuk,
             tanggal_surat = formattedTanggalSurat,
-            pengirim = "null",
-            id_bagian_pengirim = -1,
-            kepada = "null",
-            id_bagian_penerima = -1,
+            pengirim = namaPengirim,  // Nama bagian dari spinner
+            id_bagian_pengirim = idBagianPengirim,  // ID bagian dari spinner
+            kepada = namaKepada,  // Nama bagian dari spinner
+            id_bagian_penerima = idBagianPenerima,  // ID bagian dari spinner
             perihal = perihal,
             disposisi1 = disposisi1,
             tanggal_disposisi1 = formattedTanggalDisposisi1,
