@@ -1,6 +1,7 @@
 package com.example.arsipsurat.api
 
 import com.example.arsipsurat.model.Surat
+import com.example.arsipsurat.model.TambahSurat
 import com.example.arsipsurat.model.TotalSurat
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -25,6 +26,9 @@ interface ApiService {
     @Headers("Content-Type: application/json")
     @POST("get_detail_surat.php")
     fun getDetailSurat(@Body request: Map<String, Int>): Call<ApiResponse<Surat>>
+
+    @POST("post_surat_masuk.php")
+    fun tambahSurat(@Body request: TambahSurat): Call<ApiResponse<TambahSurat>>
 
     // Bagian
 
