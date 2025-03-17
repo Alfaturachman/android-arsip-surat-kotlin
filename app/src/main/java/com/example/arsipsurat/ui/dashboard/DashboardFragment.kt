@@ -46,7 +46,7 @@ class DashboardFragment : Fragment() {
                 }
 
                 binding.cardViewSuratKeluarAdmin.setOnClickListener {
-                    val intent = Intent(requireContext(), com.example.arsipsurat.ui.admin.suratmasuk.tambah.TambahSuratMasukActivity::class.java)
+                    val intent = Intent(requireContext(), com.example.arsipsurat.ui.admin.suratkeluar.RiwayatSuratKeluarActivity::class.java)
                     startActivity(intent)
                 }
             }

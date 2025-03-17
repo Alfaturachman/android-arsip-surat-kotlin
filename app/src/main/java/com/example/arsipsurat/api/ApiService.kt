@@ -23,7 +23,7 @@ interface ApiService {
     @GET("get_total_surat.php")
     fun getTotalSurat(): Call<ApiResponse<TotalSurat>>
 
-    // Admin
+    // Admin Surat Masuk
     @GET("get_all_surat.php")
     fun getSuratMasuk(): Call<ApiResponse<List<Surat>>>
 
@@ -36,7 +36,36 @@ interface ApiService {
 
     @Multipart
     @POST("post_surat_masuk.php")
-    fun tambahSurat(
+    fun tambahSuratMasuk(
+        @Part("kode_surat") kodeSurat: RequestBody,
+        @Part("nomor_urut") nomorUrut: RequestBody,
+        @Part("nomor_surat") nomorSurat: RequestBody,
+        @Part("tanggal_masuk") tanggalMasuk: RequestBody,
+        @Part("tanggal_surat") tanggalSurat: RequestBody,
+        @Part("pengirim") pengirim: RequestBody,
+        @Part("id_bagian_pengirim") idBagianPengirim: RequestBody,
+        @Part("kepada") kepada: RequestBody,
+        @Part("id_bagian_penerima") idBagianPenerima: RequestBody,
+        @Part("perihal") perihal: RequestBody,
+        @Part("disposisi1") disposisi1: RequestBody,
+        @Part("tanggal_disposisi1") tanggalDisposisi1: RequestBody,
+        @Part("disposisi2") disposisi2: RequestBody,
+        @Part("tanggal_disposisi2") tanggalDisposisi2: RequestBody,
+        @Part("disposisi3") disposisi3: RequestBody,
+        @Part("tanggal_disposisi3") tanggalDisposisi3: RequestBody,
+        @Part file: MultipartBody.Part
+    ): Call<ApiResponse<TambahSurat>>
+
+    @POST("update_surat.php")
+    fun updateSuratMasuk(@Body request: Surat): Call<ApiResponse<Surat>>
+
+    // Admin Surat Keluar
+    @GET("get_all_surat_keluar.php")
+    fun getSuratKeluar(): Call<ApiResponse<List<Surat>>>
+
+    @Multipart
+    @POST("post_surat_keluar.php")
+    fun tambahSuratKeluar(
         @Part("kode_surat") kodeSurat: RequestBody,
         @Part("nomor_urut") nomorUrut: RequestBody,
         @Part("nomor_surat") nomorSurat: RequestBody,

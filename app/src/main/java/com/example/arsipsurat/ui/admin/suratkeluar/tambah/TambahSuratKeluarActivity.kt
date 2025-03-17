@@ -1,5 +1,6 @@
-package com.example.arsipsurat.ui.admin.suratmasuk.tambah
+package com.example.arsipsurat.ui.admin.suratkeluar.tambah
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -26,7 +27,7 @@ import com.example.arsipsurat.api.ApiService
 import com.example.arsipsurat.api.RetrofitClient
 import com.example.arsipsurat.model.Bagian
 import com.example.arsipsurat.model.TambahSurat
-import com.example.arsipsurat.ui.admin.suratmasuk.RiwayatSuratMasukActivity
+import com.example.arsipsurat.ui.admin.suratkeluar.RiwayatSuratKeluarActivity
 import com.google.android.material.textfield.TextInputEditText
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -42,11 +43,11 @@ import java.io.File
 import java.io.FileInputStream
 import java.time.LocalDateTime
 
-class TambahSuratMasukActivity : AppCompatActivity() {
+class TambahSuratKeluarActivity : AppCompatActivity() {
 
     private lateinit var selectPdfLauncher: ActivityResultLauncher<Intent>
     private lateinit var tvNamaFilePdf: TextView
-    private lateinit var etTanggalMasuk: TextInputEditText
+    private lateinit var etTanggalKeluar: TextInputEditText
     private lateinit var etTanggalSurat: TextInputEditText
     private lateinit var etTanggalDisposisi1: TextInputEditText
     private lateinit var etTanggalDisposisi2: TextInputEditText
@@ -56,11 +57,13 @@ class TambahSuratMasukActivity : AppCompatActivity() {
     private var bagianList: List<Pair<String, Int>> = emptyList()
     private var selectedPdfUri: Uri? = null
     private lateinit var apiService: ApiService
-
+    
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_tambah_surat_masuk_admin)
+        setContentView(R.layout.activity_tambah_surat_keluar_admin)
+
         supportActionBar?.hide()
 
         // Set status bar color dan mode light
@@ -75,15 +78,15 @@ class TambahSuratMasukActivity : AppCompatActivity() {
 
         // Initialize views
         tvNamaFilePdf = findViewById(R.id.tvNamaFilePdf)
-        etTanggalMasuk = findViewById(R.id.etTanggalMasuk)
+        etTanggalKeluar = findViewById(R.id.etTanggalKeluar)
         etTanggalSurat = findViewById(R.id.etTanggalSurat)
         etTanggalDisposisi1 = findViewById(R.id.etTanggalDisposisi1)
         etTanggalDisposisi2 = findViewById(R.id.etTanggalDisposisi2)
         etTanggalDisposisi3 = findViewById(R.id.etTanggalDisposisi3)
 
-        // Set up DatePicker for Tanggal Masuk
-        etTanggalMasuk.setOnClickListener {
-            showDateTimePicker(etTanggalMasuk, "2025-05-01 20:33:00")
+        // Set up DatePicker for Tanggal Keluar
+        etTanggalKeluar.setOnClickListener {
+            showDateTimePicker(etTanggalKeluar, "2025-05-01 20:33:00")
         }
 
         // Set up DatePicker for Tanggal Surat (hanya tanggal)
@@ -129,7 +132,7 @@ class TambahSuratMasukActivity : AppCompatActivity() {
 
         val buttonTambah = findViewById<com.google.android.material.button.MaterialButton>(R.id.buttonTambah)
         buttonTambah.setOnClickListener {
-            simpanSuratMasuk()
+            simpanSuratKeluar()
         }
     }
 
@@ -168,7 +171,7 @@ class TambahSuratMasukActivity : AppCompatActivity() {
                             val bagianPairs = bagianList.map { Pair(it.nama_bagian, it.id_bagian) }
 
                             // Isi bagianList dengan data yang diterima
-                            this@TambahSuratMasukActivity.bagianList = bagianPairs
+                            this@TambahSuratKeluarActivity.bagianList = bagianPairs
 
                             setupSpinner(spinnerPengirim, bagianPairs)
                             setupSpinner(spinnerKepada, bagianPairs)
@@ -217,7 +220,7 @@ class TambahSuratMasukActivity : AppCompatActivity() {
         return MultipartBody.Part.createFormData("file_surat", file.name, requestFile)
     }
 
-    private fun simpanSuratMasuk() {
+    private fun simpanSuratKeluar() {
         // Ambil nilai dari input fields
         val etKodeSurat = findViewById<TextInputEditText>(R.id.etKodeSurat)
         val etNomorUrut = findViewById<TextInputEditText>(R.id.etNomorUrut)
@@ -226,7 +229,7 @@ class TambahSuratMasukActivity : AppCompatActivity() {
         val etDisposisi1 = findViewById<TextInputEditText>(R.id.etDisposisi1)
         val etDisposisi2 = findViewById<TextInputEditText>(R.id.etDisposisi2)
         val etDisposisi3 = findViewById<TextInputEditText>(R.id.etDisposisi3)
-        val etTanggalMasuk = findViewById<TextInputEditText>(R.id.etTanggalMasuk)
+        val etTanggalKeluar = findViewById<TextInputEditText>(R.id.etTanggalKeluar)
         val etTanggalSurat = findViewById<TextInputEditText>(R.id.etTanggalSurat)
         val etTanggalDisposisi1 = findViewById<TextInputEditText>(R.id.etTanggalDisposisi1)
         val etTanggalDisposisi2 = findViewById<TextInputEditText>(R.id.etTanggalDisposisi2)
@@ -242,9 +245,9 @@ class TambahSuratMasukActivity : AppCompatActivity() {
         val bagianPengirim = if (selectedPengirimPos in bagianList.indices) bagianList[selectedPengirimPos] else null
         val bagianKepada = if (selectedKepadaPos in bagianList.indices) bagianList[selectedKepadaPos] else null
 
-        Log.d("TambahSuratMasuk", "Bagian List Size: ${bagianList.size}")
-        Log.d("TambahSuratMasuk", "Selected Pengirim Pos: $selectedPengirimPos")
-        Log.d("TambahSuratMasuk", "Selected Kepada Pos: $selectedKepadaPos")
+        Log.d("TambahSuratKeluar", "Bagian List Size: ${bagianList.size}")
+        Log.d("TambahSuratKeluar", "Selected Pengirim Pos: $selectedPengirimPos")
+        Log.d("TambahSuratKeluar", "Selected Kepada Pos: $selectedKepadaPos")
 
         // Simpan nama dan ID bagian ke dalam variabel yang akan dikirim ke API
         val namaPengirim = bagianPengirim?.first ?: ""
@@ -260,14 +263,14 @@ class TambahSuratMasukActivity : AppCompatActivity() {
         val disposisi1 = etDisposisi1.text.toString().trim()
         val disposisi2 = etDisposisi2.text.toString().trim()
         val disposisi3 = etDisposisi3.text.toString().trim()
-        val tanggalMasuk = etTanggalMasuk.text.toString().trim()
+        val tanggalKeluar = etTanggalKeluar.text.toString().trim()
         val tanggalSurat = etTanggalSurat.text.toString().trim()
         val tanggalDisposisi1 = etTanggalDisposisi1.text.toString().trim()
         val tanggalDisposisi2 = etTanggalDisposisi2.text.toString().trim()
         val tanggalDisposisi3 = etTanggalDisposisi3.text.toString().trim()
 
         // Validasi input (jika ada yang kosong, tampilkan pesan error)
-        if (kodeSurat.isEmpty() || nomorUrut.isEmpty() || nomorSurat.isEmpty() || perihal.isEmpty() || tanggalMasuk.isEmpty() || tanggalSurat.isEmpty()) {
+        if (kodeSurat.isEmpty() || nomorUrut.isEmpty() || nomorSurat.isEmpty() || perihal.isEmpty() || tanggalKeluar.isEmpty() || tanggalSurat.isEmpty()) {
             Toast.makeText(this, "Semua field wajib diisi!", Toast.LENGTH_SHORT).show()
             return
         }
@@ -279,7 +282,7 @@ class TambahSuratMasukActivity : AppCompatActivity() {
 
         val filePart = getFilePart(selectedPdfUri!!) ?: return
 
-        // Format untuk tanggal dengan waktu (tanggal_masuk dan tanggal_disposisi)
+        // Format untuk tanggal dengan waktu (tanggal_Keluar dan tanggal_disposisi)
         val inputFormatterDateTime = DateTimeFormatter.ofPattern("yyyy-M-d HH:mm:ss")
         val outputFormatterDateTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 
@@ -287,12 +290,12 @@ class TambahSuratMasukActivity : AppCompatActivity() {
         val inputFormatterDate = DateTimeFormatter.ofPattern("yyyy-M-d")
         val outputFormatterDate = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-        // Format tanggal_masuk
-        val formattedTanggalMasuk = try {
-            LocalDateTime.parse(tanggalMasuk, inputFormatterDateTime).format(outputFormatterDateTime)
+        // Format tanggal_Keluar
+        val formattedTanggalKeluar = try {
+            LocalDateTime.parse(tanggalKeluar, inputFormatterDateTime).format(outputFormatterDateTime)
         } catch (e: Exception) {
-            Log.e("TambahSuratMasuk", "Error parsing tanggal masuk: ${e.message}")
-            Toast.makeText(this, "Format tanggal masuk tidak valid!", Toast.LENGTH_SHORT).show()
+            Log.e("TambahSuratKeluar", "Error parsing tanggal Keluar: ${e.message}")
+            Toast.makeText(this, "Format tanggal Keluar tidak valid!", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -300,7 +303,7 @@ class TambahSuratMasukActivity : AppCompatActivity() {
         val formattedTanggalSurat = try {
             LocalDate.parse(tanggalSurat, inputFormatterDate).format(outputFormatterDate)
         } catch (e: Exception) {
-            Log.e("TambahSuratMasuk", "Error parsing tanggal surat: ${e.message}")
+            Log.e("TambahSuratKeluar", "Error parsing tanggal surat: ${e.message}")
             Toast.makeText(this, "Format tanggal surat tidak valid!", Toast.LENGTH_SHORT).show()
             return
         }
@@ -310,7 +313,7 @@ class TambahSuratMasukActivity : AppCompatActivity() {
             try {
                 LocalDateTime.parse(it, inputFormatterDateTime).format(outputFormatterDateTime)
             } catch (e: Exception) {
-                Log.e("TambahSuratMasuk", "Error parsing tanggal disposisi 1: ${e.message}")
+                Log.e("TambahSuratKeluar", "Error parsing tanggal disposisi 1: ${e.message}")
                 Toast.makeText(this, "Format tanggal disposisi 1 tidak valid!", Toast.LENGTH_SHORT).show()
                 return
             }
@@ -321,7 +324,7 @@ class TambahSuratMasukActivity : AppCompatActivity() {
             try {
                 LocalDateTime.parse(it, inputFormatterDateTime).format(outputFormatterDateTime)
             } catch (e: Exception) {
-                Log.e("TambahSuratMasuk", "Error parsing tanggal disposisi 2: ${e.message}")
+                Log.e("TambahSuratKeluar", "Error parsing tanggal disposisi 2: ${e.message}")
                 Toast.makeText(this, "Format tanggal disposisi 2 tidak valid!", Toast.LENGTH_SHORT).show()
                 return
             }
@@ -332,7 +335,7 @@ class TambahSuratMasukActivity : AppCompatActivity() {
             try {
                 LocalDateTime.parse(it, inputFormatterDateTime).format(outputFormatterDateTime)
             } catch (e: Exception) {
-                Log.e("TambahSuratMasuk", "Error parsing tanggal disposisi 3: ${e.message}")
+                Log.e("TambahSuratKeluar", "Error parsing tanggal disposisi 3: ${e.message}")
                 Toast.makeText(this, "Format tanggal disposisi 3 tidak valid!", Toast.LENGTH_SHORT).show()
                 return
             }
@@ -342,7 +345,7 @@ class TambahSuratMasukActivity : AppCompatActivity() {
         val kodeSuratBody = kodeSurat.toRequestBody("text/plain".toMediaTypeOrNull())
         val nomorUrutBody = nomorUrut.toRequestBody("text/plain".toMediaTypeOrNull())
         val nomorSuratBody = nomorSurat.toRequestBody("text/plain".toMediaTypeOrNull())
-        val tanggalMasukBody = formattedTanggalMasuk.toRequestBody("text/plain".toMediaTypeOrNull())
+        val tanggalKeluarBody = formattedTanggalKeluar.toRequestBody("text/plain".toMediaTypeOrNull())
         val tanggalSuratBody = formattedTanggalSurat.toRequestBody("text/plain".toMediaTypeOrNull())
         val pengirimBody = namaPengirim.toRequestBody("text/plain".toMediaTypeOrNull())
         val idBagianPengirimBody = idBagianPengirim.toRequestBody("text/plain".toMediaTypeOrNull())
@@ -356,30 +359,30 @@ class TambahSuratMasukActivity : AppCompatActivity() {
         val disposisi3Body = disposisi3.toRequestBody("text/plain".toMediaTypeOrNull())
         val tanggalDisposisi3Body = formattedTanggalDisposisi3.toRequestBody("text/plain".toMediaTypeOrNull())
 
-        Log.d("TambahSuratMasuk", "Kode Surat: $kodeSurat")
-        Log.d("TambahSuratMasuk", "Nomor Urut: $nomorUrut")
-        Log.d("TambahSuratMasuk", "Nomor Surat: $nomorSurat")
-        Log.d("TambahSuratMasuk", "Tanggal Masuk: $formattedTanggalMasuk")
-        Log.d("TambahSuratMasuk", "Tanggal Surat: $formattedTanggalSurat")
-        Log.d("TambahSuratMasuk", "Pengirim: $namaPengirim")
-        Log.d("TambahSuratMasuk", "ID Pengirim: $idBagianPengirim")
-        Log.d("TambahSuratMasuk", "Kepada: $namaKepada")
-        Log.d("TambahSuratMasuk", "ID Penerima: $idBagianPenerima")
-        Log.d("TambahSuratMasuk", "Perihal: $perihal")
-        Log.d("TambahSuratMasuk", "Disposisi 1: $disposisi1")
-        Log.d("TambahSuratMasuk", "Tanggal Disposisi 1: $formattedTanggalDisposisi1")
-        Log.d("TambahSuratMasuk", "Disposisi 2: $disposisi2")
-        Log.d("TambahSuratMasuk", "Tanggal Disposisi 2: $formattedTanggalDisposisi2")
-        Log.d("TambahSuratMasuk", "Disposisi 3: $disposisi3")
-        Log.d("TambahSuratMasuk", "Tanggal Disposisi 3: $formattedTanggalDisposisi3")
-        Log.d("TambahSuratMasuk", "file Part: $filePart")
+        Log.d("TambahSuratKeluar", "Kode Surat: $kodeSurat")
+        Log.d("TambahSuratKeluar", "Nomor Urut: $nomorUrut")
+        Log.d("TambahSuratKeluar", "Nomor Surat: $nomorSurat")
+        Log.d("TambahSuratKeluar", "Tanggal Keluar: $formattedTanggalKeluar")
+        Log.d("TambahSuratKeluar", "Tanggal Surat: $formattedTanggalSurat")
+        Log.d("TambahSuratKeluar", "Pengirim: $namaPengirim")
+        Log.d("TambahSuratKeluar", "ID Pengirim: $idBagianPengirim")
+        Log.d("TambahSuratKeluar", "Kepada: $namaKepada")
+        Log.d("TambahSuratKeluar", "ID Penerima: $idBagianPenerima")
+        Log.d("TambahSuratKeluar", "Perihal: $perihal")
+        Log.d("TambahSuratKeluar", "Disposisi 1: $disposisi1")
+        Log.d("TambahSuratKeluar", "Tanggal Disposisi 1: $formattedTanggalDisposisi1")
+        Log.d("TambahSuratKeluar", "Disposisi 2: $disposisi2")
+        Log.d("TambahSuratKeluar", "Tanggal Disposisi 2: $formattedTanggalDisposisi2")
+        Log.d("TambahSuratKeluar", "Disposisi 3: $disposisi3")
+        Log.d("TambahSuratKeluar", "Tanggal Disposisi 3: $formattedTanggalDisposisi3")
+        Log.d("TambahSuratKeluar", "file Part: $filePart")
 
         // Kirim data ke API menggunakan Retrofit
-        RetrofitClient.instance.tambahSuratMasuk(
+        RetrofitClient.instance.tambahSuratKeluar(
             kodeSuratBody,
             nomorUrutBody,
             nomorSuratBody,
-            tanggalMasukBody,
+            tanggalKeluarBody,
             tanggalSuratBody,
             pengirimBody,
             idBagianPengirimBody,
@@ -401,25 +404,25 @@ class TambahSuratMasukActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val result = response.body()
                     if (result != null && result.status) {
-                        Toast.makeText(this@TambahSuratMasukActivity, "Surat Masuk berhasil disimpan!", Toast.LENGTH_SHORT).show()
-                        val intent = Intent(this@TambahSuratMasukActivity, RiwayatSuratMasukActivity::class.java)
+                        Toast.makeText(this@TambahSuratKeluarActivity, "Surat Keluar berhasil disimpan!", Toast.LENGTH_SHORT).show()
+                        val intent = Intent(this@TambahSuratKeluarActivity, RiwayatSuratKeluarActivity::class.java)
                         startActivity(intent)
                         finish()
                     } else {
                         val errorBody = response.errorBody()?.string()
-                        Log.e("TambahSuratMasuk", "Gagal menyimpan surat masuk. Error: $errorBody")
-                        Toast.makeText(this@TambahSuratMasukActivity, "Gagal menyimpan surat masuk!", Toast.LENGTH_SHORT).show()
+                        Log.e("TambahSuratKeluar", "Gagal menyimpan surat Keluar. Error: $errorBody")
+                        Toast.makeText(this@TambahSuratKeluarActivity, "Gagal menyimpan surat Keluar!", Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     val errorBody = response.errorBody()?.string()
-                    Log.e("TambahSuratMasuk", "Response error: ${response.code()} - ${response.message()}. Error body: $errorBody")
-                    Toast.makeText(this@TambahSuratMasukActivity, "Error: ${response.message()}", Toast.LENGTH_SHORT).show()
+                    Log.e("TambahSuratKeluar", "Response error: ${response.code()} - ${response.message()}. Error body: $errorBody")
+                    Toast.makeText(this@TambahSuratKeluarActivity, "Error: ${response.message()}", Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<ApiResponse<TambahSurat>>, t: Throwable) {
-                Log.e("TambahSuratMasuk", "Gagal menghubungi server: ${t.message}", t)
-                Toast.makeText(this@TambahSuratMasukActivity, "Gagal menghubungi server!", Toast.LENGTH_SHORT).show()
+                Log.e("TambahSuratKeluar", "Gagal menghubungi server: ${t.message}", t)
+                Toast.makeText(this@TambahSuratKeluarActivity, "Gagal menghubungi server!", Toast.LENGTH_SHORT).show()
             }
         })
     }

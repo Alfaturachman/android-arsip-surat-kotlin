@@ -18,6 +18,12 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".ui.admin.suratkeluar.tambah.TambahSuratKeluarActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.admin.suratkeluar.RiwayatSuratKeluarActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.admin.suratmasuk.tambah.TambahSuratMasukActivity"
             android:exported="false" />
         <activity
