@@ -1,5 +1,6 @@
 package com.example.arsipsurat.api
 
+import com.example.arsipsurat.model.Bagian
 import com.example.arsipsurat.model.Surat
 import com.example.arsipsurat.model.TambahSurat
 import com.example.arsipsurat.model.TotalSurat
@@ -26,6 +27,9 @@ interface ApiService {
     @Headers("Content-Type: application/json")
     @POST("get_detail_surat.php")
     fun getDetailSurat(@Body request: Map<String, Int>): Call<ApiResponse<Surat>>
+
+    @GET("get_bagian.php")
+    fun getBagian(): Call<ApiResponse<List<Bagian>>>
 
     @POST("post_surat_masuk.php")
     fun tambahSurat(@Body request: TambahSurat): Call<ApiResponse<TambahSurat>>

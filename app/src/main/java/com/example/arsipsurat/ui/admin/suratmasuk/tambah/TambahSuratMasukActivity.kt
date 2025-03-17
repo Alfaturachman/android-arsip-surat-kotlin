@@ -6,17 +6,22 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.DatePicker
 import android.widget.ImageButton
+import android.widget.Spinner
 import android.widget.TimePicker
 import android.widget.Toast
+import android.widget.AdapterView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.arsipsurat.R
 import com.example.arsipsurat.api.ApiResponse
+import com.example.arsipsurat.api.ApiService
 import com.example.arsipsurat.api.RetrofitClient
+import com.example.arsipsurat.model.Bagian
 import com.example.arsipsurat.model.TambahSurat
 import com.example.arsipsurat.ui.admin.suratmasuk.RiwayatSuratMasukActivity
 import com.google.android.material.textfield.TextInputEditText
@@ -28,7 +33,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.time.LocalDateTime
 
-
 class TambahSuratMasukActivity : AppCompatActivity() {
 
     private lateinit var etTanggalMasuk: TextInputEditText
@@ -36,6 +40,9 @@ class TambahSuratMasukActivity : AppCompatActivity() {
     private lateinit var etTanggalDisposisi1: TextInputEditText
     private lateinit var etTanggalDisposisi2: TextInputEditText
     private lateinit var etTanggalDisposisi3: TextInputEditText
+    private lateinit var spinnerPengirim: Spinner
+    private lateinit var spinnerKepada: Spinner
+    private lateinit var apiService: ApiService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,6 +92,10 @@ class TambahSuratMasukActivity : AppCompatActivity() {
             showDateTimePicker(etTanggalDisposisi3, "2025-01-09 08:02:53")
         }
 
+        spinnerPengirim = findViewById(R.id.spinnerPengirim)
+        spinnerKepada = findViewById(R.id.spinnerKepada)
+
+        getBagianData()
 
         val buttonTambah = findViewById<com.google.android.material.button.MaterialButton>(R.id.buttonTambah)
         buttonTambah.setOnClickListener {
@@ -92,46 +103,60 @@ class TambahSuratMasukActivity : AppCompatActivity() {
         }
     }
 
-    private fun showDatePicker(editText: TextInputEditText, defaultDate: String) {
-        val calendar = Calendar.getInstance()
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val day = calendar.get(Calendar.DAY_OF_MONTH)
+    private fun getBagianData() {
+        apiService = RetrofitClient.instance
+        apiService.getBagian().enqueue(object : Callback<ApiResponse<List<Bagian>>> {
+            override fun onResponse(
+                call: Call<ApiResponse<List<Bagian>>>,
+                response: Response<ApiResponse<List<Bagian>>>
+            ) {
+                if (response.isSuccessful) {
+                    response.body()?.let { apiResponse ->
+                        if (apiResponse.status) {
+                            val bagianList = apiResponse.data ?: emptyList()
+                            val bagianPairs = bagianList.map { Pair(it.nama_bagian, it.id_bagian) }
 
-        val datePickerDialog = DatePickerDialog(this, { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
-            val selectedDate = "$year-${month + 1}-$dayOfMonth"
-            editText.setText(selectedDate)
-        }, year, month, day)
+                            setupSpinner(spinnerPengirim, bagianPairs)
+                            setupSpinner(spinnerKepada, bagianPairs)
+                        } else {
+                            showToast("Gagal mengambil data")
+                        }
+                    } ?: showToast("Response body null")
+                } else {
+                    showToast("Response tidak berhasil")
+                }
+            }
 
-        datePickerDialog.show()
+            override fun onFailure(call: Call<ApiResponse<List<Bagian>>>, t: Throwable) {
+                showToast("Error: ${t.message}")
+            }
+        })
     }
 
-    private fun showDateTimePicker(editText: TextInputEditText, defaultDateTime: String) {
-        val calendar = Calendar.getInstance()
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val day = calendar.get(Calendar.DAY_OF_MONTH)
-        val hour = calendar.get(Calendar.HOUR_OF_DAY)
-        val minute = calendar.get(Calendar.MINUTE)
+    private fun showToast(message: String) {
+        Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
+    }
 
-        val datePickerDialog = DatePickerDialog(this, { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
-            val timePickerDialog = TimePickerDialog(this, { _: TimePicker, hourOfDay: Int, minute: Int ->
-                val selectedDateTime = "$year-${month + 1}-$dayOfMonth $hourOfDay:$minute:00"
-                editText.setText(selectedDateTime)
-            }, hour, minute, true)
+    private fun setupSpinner(spinner: Spinner, dataList: List<Pair<String, Int>>) {
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, dataList.map { it.first })
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
 
-            timePickerDialog.show()
-        }, year, month, day)
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val selectedName = dataList[position].first
+                val selectedId = dataList[position].second
+                Log.d("Spinner", "${spinner.id}: $selectedName (ID: $selectedId)")
+            }
 
-        datePickerDialog.show()
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
     }
 
     private fun simpanSuratMasuk() {
         val etKodeSurat = findViewById<TextInputEditText>(R.id.etKodeSurat)
         val etNomorUrut = findViewById<TextInputEditText>(R.id.etNomorUrut)
         val etNomorSurat = findViewById<TextInputEditText>(R.id.etNomorSurat)
-        val etPengirim = findViewById<TextInputEditText>(R.id.etPengirim)
-        val etKepada = findViewById<TextInputEditText>(R.id.etKepada)
         val etPerihal = findViewById<TextInputEditText>(R.id.etPerihal)
         val etDisposisi1 = findViewById<TextInputEditText>(R.id.etDisposisi1)
         val etDisposisi2 = findViewById<TextInputEditText>(R.id.etDisposisi2)
@@ -145,8 +170,6 @@ class TambahSuratMasukActivity : AppCompatActivity() {
         val kodeSurat = etKodeSurat.text.toString().trim()
         val nomorUrut = etNomorUrut.text.toString().trim()
         val nomorSurat = etNomorSurat.text.toString().trim()
-        val pengirim = etPengirim.text.toString().trim()
-        val kepada = etKepada.text.toString().trim()
         val perihal = etPerihal.text.toString().trim()
         val disposisi1 = etDisposisi1.text.toString().trim()
         val disposisi2 = etDisposisi2.text.toString().trim()
@@ -154,7 +177,7 @@ class TambahSuratMasukActivity : AppCompatActivity() {
 
         // Validasi input (jika ada yang kosong, tampilkan pesan error)
         if (kodeSurat.isEmpty() || nomorUrut.isEmpty() || nomorSurat.isEmpty() ||
-            pengirim.isEmpty() || kepada.isEmpty() || perihal.isEmpty()) {
+            perihal.isEmpty()) {
             Toast.makeText(this, "Semua field wajib diisi!", Toast.LENGTH_SHORT).show()
             return
         }
@@ -199,8 +222,10 @@ class TambahSuratMasukActivity : AppCompatActivity() {
             nomor_surat = nomorSurat,
             tanggal_masuk = formattedTanggalMasuk,
             tanggal_surat = formattedTanggalSurat,
-            pengirim = pengirim,
-            kepada = kepada,
+            pengirim = "null",
+            id_bagian_pengirim = -1,
+            kepada = "null",
+            id_bagian_penerima = -1,
             perihal = perihal,
             disposisi1 = disposisi1,
             tanggal_disposisi1 = formattedTanggalDisposisi1,
@@ -251,4 +276,37 @@ class TambahSuratMasukActivity : AppCompatActivity() {
         })
     }
 
+    private fun showDatePicker(editText: TextInputEditText, defaultDate: String) {
+        val calendar = Calendar.getInstance()
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+        val datePickerDialog = DatePickerDialog(this, { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
+            val selectedDate = "$year-${month + 1}-$dayOfMonth"
+            editText.setText(selectedDate)
+        }, year, month, day)
+
+        datePickerDialog.show()
+    }
+
+    private fun showDateTimePicker(editText: TextInputEditText, defaultDateTime: String) {
+        val calendar = Calendar.getInstance()
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        val minute = calendar.get(Calendar.MINUTE)
+
+        val datePickerDialog = DatePickerDialog(this, { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
+            val timePickerDialog = TimePickerDialog(this, { _: TimePicker, hourOfDay: Int, minute: Int ->
+                val selectedDateTime = "$year-${month + 1}-$dayOfMonth $hourOfDay:$minute:00"
+                editText.setText(selectedDateTime)
+            }, hour, minute, true)
+
+            timePickerDialog.show()
+        }, year, month, day)
+
+        datePickerDialog.show()
+    }
 }
