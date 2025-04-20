@@ -85,5 +85,67 @@ interface ApiService {
         @Part file: MultipartBody.Part
     ): Call<ApiResponse<TambahSurat>>
 
-    // Bagian
+    // Bagian Surat Masuk
+    @Headers("Content-Type: application/json")
+    @POST("get_all_surat_masuk_bagian.php")
+    fun getSuratMasukBagian(@Body request: Map<String, Int>): Call<ApiResponse<List<Surat>>>
+
+    @Headers("Content-Type: application/json")
+    @POST("get_detail_surat.php")
+    fun getDetailSuratBagian(@Body request: Map<String, Int>): Call<ApiResponse<Surat>>
+
+    @GET("get_bagian.php")
+    fun getBagianBagian(): Call<ApiResponse<List<Bagian>>>
+
+    @Multipart
+    @POST("post_surat_masuk.php")
+    fun tambahSuratMasukBagian(
+        @Part("kode_surat") kodeSurat: RequestBody,
+        @Part("nomor_urut") nomorUrut: RequestBody,
+        @Part("nomor_surat") nomorSurat: RequestBody,
+        @Part("tanggal_masuk") tanggalMasuk: RequestBody,
+        @Part("tanggal_surat") tanggalSurat: RequestBody,
+        @Part("pengirim") pengirim: RequestBody,
+        @Part("id_bagian_pengirim") idBagianPengirim: RequestBody,
+        @Part("kepada") kepada: RequestBody,
+        @Part("id_bagian_penerima") idBagianPenerima: RequestBody,
+        @Part("perihal") perihal: RequestBody,
+        @Part("disposisi1") disposisi1: RequestBody,
+        @Part("tanggal_disposisi1") tanggalDisposisi1: RequestBody,
+        @Part("disposisi2") disposisi2: RequestBody,
+        @Part("tanggal_disposisi2") tanggalDisposisi2: RequestBody,
+        @Part("disposisi3") disposisi3: RequestBody,
+        @Part("tanggal_disposisi3") tanggalDisposisi3: RequestBody,
+        @Part file: MultipartBody.Part
+    ): Call<ApiResponse<TambahSurat>>
+
+    @POST("update_surat.php")
+    fun updateSuratMasukBagian(@Body request: Surat): Call<ApiResponse<Surat>>
+
+    // Admin Surat Keluar
+    @Headers("Content-Type: application/json")
+    @POST("get_all_surat_keluar_bagian.php")
+    fun getSuratKeluarBagian(@Body request: Map<String, Int>): Call<ApiResponse<List<Surat>>>
+
+    @Multipart
+    @POST("post_surat_keluar.php")
+    fun tambahSuratKeluarBagian(
+        @Part("kode_surat") kodeSurat: RequestBody,
+        @Part("nomor_urut") nomorUrut: RequestBody,
+        @Part("nomor_surat") nomorSurat: RequestBody,
+        @Part("tanggal_masuk") tanggalMasuk: RequestBody,
+        @Part("tanggal_surat") tanggalSurat: RequestBody,
+        @Part("pengirim") pengirim: RequestBody,
+        @Part("id_bagian_pengirim") idBagianPengirim: RequestBody,
+        @Part("kepada") kepada: RequestBody,
+        @Part("id_bagian_penerima") idBagianPenerima: RequestBody,
+        @Part("perihal") perihal: RequestBody,
+        @Part("disposisi1") disposisi1: RequestBody,
+        @Part("tanggal_disposisi1") tanggalDisposisi1: RequestBody,
+        @Part("disposisi2") disposisi2: RequestBody,
+        @Part("tanggal_disposisi2") tanggalDisposisi2: RequestBody,
+        @Part("disposisi3") disposisi3: RequestBody,
+        @Part("tanggal_disposisi3") tanggalDisposisi3: RequestBody,
+        @Part file: MultipartBody.Part
+    ): Call<ApiResponse<TambahSurat>>
 }

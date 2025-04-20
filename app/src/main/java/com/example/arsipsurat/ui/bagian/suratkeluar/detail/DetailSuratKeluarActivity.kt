@@ -1,5 +1,6 @@
-package com.example.arsipsurat.ui.bagian.suratmasuk.detail
+package com.example.arsipsurat.ui.bagian.suratkeluar.detail
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -20,7 +21,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class DetailSuratMasukActivity : AppCompatActivity() {
+class DetailSuratKeluarActivity : AppCompatActivity() {
 
     private var idSurat: Int = -1
     private lateinit var titleText: TextView
@@ -41,10 +42,11 @@ class DetailSuratMasukActivity : AppCompatActivity() {
     private lateinit var tvDisposisi3: TextView
     private lateinit var tvTanggalDisposisi3: TextView
 
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_detail_surat_masuk_bagian)
+        setContentView(R.layout.activity_detail_surat_keluar_bagian)
         supportActionBar?.hide()
 
         // Set status bar color dan mode light
@@ -136,7 +138,7 @@ class DetailSuratMasukActivity : AppCompatActivity() {
                         } else {
                             Log.e("API_ERROR", "Response gagal: ${suratResponse?.message}")
                             Toast.makeText(
-                                this@DetailSuratMasukActivity,
+                                this@DetailSuratKeluarActivity,
                                 suratResponse?.message ?: "Data tidak ditemukan",
                                 Toast.LENGTH_SHORT
                             ).show()
@@ -144,13 +146,13 @@ class DetailSuratMasukActivity : AppCompatActivity() {
                     } else {
                         val errorBody = response.errorBody()?.string()
                         Log.e("API_ERROR", "Response Error: $errorBody")
-                        Toast.makeText(this@DetailSuratMasukActivity, "Gagal mengambil data", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@DetailSuratKeluarActivity, "Gagal mengambil data", Toast.LENGTH_SHORT).show()
                     }
                 }
 
                 override fun onFailure(call: Call<ApiResponse<Surat>>, t: Throwable) {
                     Log.e("API_ERROR", "Failure: ${t.message}", t)
-                    Toast.makeText(this@DetailSuratMasukActivity, "Terjadi kesalahan jaringan", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@DetailSuratKeluarActivity, "Terjadi kesalahan jaringan", Toast.LENGTH_SHORT).show()
                 }
             })
     }

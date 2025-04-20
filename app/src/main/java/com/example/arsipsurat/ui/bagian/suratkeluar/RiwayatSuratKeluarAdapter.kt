@@ -1,4 +1,4 @@
-package com.example.arsipsurat.ui.admin.suratkeluar
+package com.example.arsipsurat.ui.bagian.suratkeluar
 
 import android.content.Intent
 import android.view.LayoutInflater
@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.arsipsurat.R
 import com.example.arsipsurat.helpers.DateHelper
 import com.example.arsipsurat.model.Surat
-import com.example.arsipsurat.ui.admin.suratkeluar.detail.DetailSuratKeluarActivity
+import com.example.arsipsurat.ui.bagian.suratkeluar.detail.DetailSuratKeluarActivity
 
 class RiwayatSuratKeluarAdapter(
     private var agendaList: List<Surat>,

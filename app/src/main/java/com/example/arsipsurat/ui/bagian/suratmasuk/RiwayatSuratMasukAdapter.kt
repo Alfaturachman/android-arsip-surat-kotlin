@@ -1,4 +1,4 @@
-package com.example.arsipsurat.ui.admin.suratkeluar
+package com.example.arsipsurat.ui.bagian.suratmasuk
 
 import android.content.Intent
 import android.view.LayoutInflater
@@ -10,11 +10,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.arsipsurat.R
 import com.example.arsipsurat.helpers.DateHelper
 import com.example.arsipsurat.model.Surat
-import com.example.arsipsurat.ui.admin.suratkeluar.detail.DetailSuratKeluarActivity
+import com.example.arsipsurat.ui.bagian.suratmasuk.detail.DetailSuratMasukActivity
 
-class RiwayatSuratKeluarAdapter(
+class RiwayatSuratMasukAdapter(
     private var agendaList: List<Surat>,
-) : RecyclerView.Adapter<RiwayatSuratKeluarAdapter.SuratMasukViewHolder>() {
+) : RecyclerView.Adapter<RiwayatSuratMasukAdapter.SuratMasukViewHolder>() {
 
     class SuratMasukViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvKodeSurat: TextView = view.findViewById(R.id.tvKodeSurat)
@@ -29,7 +29,7 @@ class RiwayatSuratKeluarAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SuratMasukViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.daftar_riwayat_surat_keluar, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.daftar_riwayat_surat_masuk, parent, false)
         return SuratMasukViewHolder(view)
     }
 
@@ -57,7 +57,7 @@ class RiwayatSuratKeluarAdapter(
 
         // CardView click listener
         holder.cardView.setOnClickListener {
-            val intent = Intent(context, DetailSuratKeluarActivity::class.java).apply {
+            val intent = Intent(context, DetailSuratMasukActivity::class.java).apply {
                 putExtra("id_surat", item.id)
                 putExtra("kode_surat", item.kode_surat)
                 putExtra("nomor_surat", item.nomor_surat)

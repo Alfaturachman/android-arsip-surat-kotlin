@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.arsipsurat.databinding.FragmentDashboardBinding
+import com.example.arsipsurat.ui.bagian.suratkeluar.RiwayatSuratKeluarActivity
 import com.example.arsipsurat.ui.bagian.suratmasuk.RiwayatSuratMasukActivity
 import com.example.arsipsurat.ui.bagian.suratmasuk.tambah.TambahSuratMasukActivity
 
@@ -60,7 +61,7 @@ class DashboardFragment : Fragment() {
                 }
 
                 binding.cardViewSuratKeluarBagian.setOnClickListener {
-                    val intent = Intent(requireContext(), TambahSuratMasukActivity::class.java)
+                    val intent = Intent(requireContext(), RiwayatSuratKeluarActivity::class.java)
                     startActivity(intent)
                 }
             }

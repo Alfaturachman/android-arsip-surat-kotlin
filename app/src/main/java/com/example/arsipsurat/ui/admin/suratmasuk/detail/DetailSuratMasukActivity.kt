@@ -132,7 +132,6 @@ class DetailSuratMasukActivity : AppCompatActivity() {
                             suratResponse.data?.let { surat ->
                                 Log.d("API_RESPONSE", "Data berhasil diterima: $surat")
 
-
                             }
                         } else {
                             Log.e("API_ERROR", "Response gagal: ${suratResponse?.message}")

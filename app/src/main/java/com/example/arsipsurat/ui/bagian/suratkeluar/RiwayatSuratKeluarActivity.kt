@@ -1,12 +1,12 @@
-package com.example.arsipsurat.ui.bagian.suratmasuk
+package com.example.arsipsurat.ui.bagian.suratkeluar
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.ImageButton
-import android.widget.LinearLayout
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
@@ -16,23 +16,24 @@ import com.example.arsipsurat.R
 import com.example.arsipsurat.api.ApiResponse
 import com.example.arsipsurat.api.RetrofitClient
 import com.example.arsipsurat.model.Surat
-import com.example.arsipsurat.ui.bagian.suratmasuk.RiwayatSuratMasukAdapter
-import com.example.arsipsurat.ui.bagian.suratmasuk.tambah.TambahSuratMasukActivity
+import com.example.arsipsurat.ui.bagian.suratkeluar.RiwayatSuratKeluarAdapter
+import com.example.arsipsurat.ui.bagian.suratkeluar.tambah.TambahSuratKeluarActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class RiwayatSuratMasukActivity : AppCompatActivity() {
+class RiwayatSuratKeluarActivity : AppCompatActivity() {
 
     private var idUser: Int = -1
     private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: RiwayatSuratMasukAdapter
-    private lateinit var cardViewTambahSuratMasuk: CardView
+    private lateinit var adapter: RiwayatSuratKeluarAdapter
+    private lateinit var cardViewTambahSuratKeluar: CardView
 
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_riwayat_surat_masuk_bagian)
+        setContentView(R.layout.activity_riwayat_surat_keluar_bagian)
         supportActionBar?.hide()
 
         // Set status bar color dan mode light
@@ -45,17 +46,17 @@ class RiwayatSuratMasukActivity : AppCompatActivity() {
             finish()
         }
 
-        cardViewTambahSuratMasuk = findViewById(R.id.cardViewTambahSuratMasuk)
+        cardViewTambahSuratKeluar = findViewById(R.id.cardViewTambahSuratKeluar)
 
-        cardViewTambahSuratMasuk.setOnClickListener {
-            val intent = Intent(this, TambahSuratMasukActivity::class.java)
+        cardViewTambahSuratKeluar.setOnClickListener {
+            val intent = Intent(this, TambahSuratKeluarActivity::class.java)
             startActivity(intent)
         }
 
-        recyclerView = findViewById(R.id.recyclerViewRiwayatSuratMasuk)
+        recyclerView = findViewById(R.id.recyclerViewRiwayatSuratKeluar)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        adapter = RiwayatSuratMasukAdapter(emptyList())
+        adapter = RiwayatSuratKeluarAdapter(emptyList())
         recyclerView.adapter = adapter
 
         idUser = getUserIdFromSharedPreferences()
@@ -68,7 +69,7 @@ class RiwayatSuratMasukActivity : AppCompatActivity() {
 
         Log.d("RiwayatMedia", "Mengirim request ke server dengan body: $requestBody")
 
-        val call = RetrofitClient.instance.getSuratMasukBagian(requestBody)
+        val call = RetrofitClient.instance.getSuratKeluarBagian(requestBody)
         call.enqueue(object : Callback<ApiResponse<List<Surat>>> {
             override fun onResponse(
                 call: Call<ApiResponse<List<Surat>>>,
